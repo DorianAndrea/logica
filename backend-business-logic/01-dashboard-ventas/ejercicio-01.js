@@ -654,3 +654,100 @@
 // console.log(agruparPorPersonas);
 // console.log(`El equipo ganador es: ${equipoGanador}`);
 
+// una empresa quiere saber cuantos clientes hay por ciudad y que ciudad tiene mas clientes
+// const clientes = [
+//     {
+//         ciudad: "Valparaíso"
+//     },
+//     {
+//         ciudad: "Santiago"
+//     },
+//     {
+//         ciudad: "Valparaíso"
+//     },
+//     {
+//         ciudad: "Concepción"
+//     },
+//     {
+//         ciudad: "Valparaíso"
+//     },
+//     {
+//         ciudad: "Santiago"
+//     }
+// ];
+// Agrupar por ciudad
+// Guardar cantidadClientes
+// const agruparPorCiudad = clientes.reduce((acc, {ciudad}) =>{
+//     if(!acc[ciudad]){
+//         acc[ciudad] = {
+//             cantidadClientes: 1
+//         }
+//     }else{
+//         acc[ciudad].cantidadClientes++;
+//     }
+//     return acc;
+// },
+// {}
+// )
+// // Buscar máximo
+// const maxClientes = Math.max(...Object.values(agruparPorCiudad)
+//                     .map(({cantidadClientes}) => cantidadClientes)
+//                 );
+
+// console.log(agruparPorCiudad);
+
+// // Encontrar ciudad ganadora
+// const ciudadGanadora = Object.keys(agruparPorCiudad)
+//                         .find((ciudad) => agruparPorCiudad[ciudad].cantidadClientes === maxClientes
+//                     );
+// console.log(agruparPorCiudad);
+// console.log(`La cuidad con más clientes es: ${ciudadGanadora}`);
+
+
+// PARA RECORDAR: Los tres (keys, values y entries) devuelven arrays.
+// const ciudades = {
+//     Valparaiso: {
+//         cantidadClientes: 3
+//     },
+//     Santiago: {
+//         cantidadClientes: 2
+//     }
+// };
+//Object.keys(ciudades) trae las llaves Object.keys(ciudades) como resultado arrays de strings,
+// object keys array de llaves
+//no devuelve un objeto, devuelve un array cuyos elemenos son objetos
+
+// Object.values(ciudades) trae los valores:
+// [
+//     {
+//         cantidadClientes: 3
+//     },
+//     {
+//         cantidadClientes: 2
+//     }
+// ]
+
+//Object.entries() trae la llave y el valor juntos : Object.entries(ciudades)
+// [
+//     [
+//         "Valparaiso",
+//         {
+//             cantidadClientes: 3
+//         }
+//     ],
+//     [
+//         "Santiago",
+//         {
+//             cantidadClientes: 2
+//         }
+//     ]
+// ]
+
+//¿Por qué usamos values para Math.max? porque necesitamos números
+// ¿Por qué usamos entries para Top 3? porque necesitamos nombre de la cuidad y cantidad de clientes al mismo tiempo
+
+// keys = llaves
+
+// values = valores
+
+// entries = llave + valor
