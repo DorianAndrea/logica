@@ -177,3 +177,185 @@
 // cuando subes el archivo a git solo subes el package.json y el te dice que descargar
 //dentro de gitignore se debe poner node_modules/
 
+// API´s que es un intermediario que permite que dos aplicaciones hablen entre si
+// CRUD Create, Read, Update, Delete
+// en la API create: crea algo POST /emociones, read: lee la info GET /emociones, 
+// update: modificar PUT /emociones/1 o PATH /empociones/1, delete: elimina DELETE /emociones/1
+
+// PUT = actualizar la ruta es app.put("/emociones/id" (req, res) =>{}), 
+// que necesitamos? el ID siempre debe ser /emociones/1 (req.params.id)
+// app.put("/emociones/:id", (req, res) => {
+//     const id = Number(req.params.id);
+//     const emocion = emociones.find(
+//         (emocion) => emocion.id === id
+//     );
+//     if (!emocion) {
+//         return res.status(404).json({
+//             mensaje: "No encontrada"
+//         });
+//     }
+//     emocion.nombre = req.body.nombre;
+//     return res.status(200).json({
+//         mensaje: "Actualizada"
+//     });
+// });
+
+// diferencia entre PUT y PATH es que PUT reemplaza completo y PATH modifica parcialmente
+
+// DELETE quieres borrar una emocion {id: 1, nombre:"feliz"} 
+// para borrar la ruta app.delete("/emociones/:id" (req, res) =>{}), 
+// necesitas solo el id req.params.id
+// app.delete("/emociones/:id", (req, res) => {
+//     const id = Number(req.params.id);
+//     const emocion = emociones.find(
+//         (emocion) => emocion.id === id
+//     );
+//     if (!emocion) {
+//         return res.status(404).json({
+//             mensaje: "No encontrada"
+//         });
+//     }
+//     return res.status(200).json({
+//         mensaje: "Eliminada"
+//     });
+// });
+
+// mapa completo de una petición
+// cuando llega una peticion POST /emociones/5?modo=test el body {"nombre": "Feliz"}
+// express recibe tres fuentes de datos distintas: params con req.params.id, 
+// Query req.query.modo "test" y 
+// el body con req.body.nombre
+
+//Middleware
+//funcion que se ejetuca antes de llegar a la ruta
+//express.json() => esto es un middleware
+//el middleware recibe la petición, la procesa y la pasa a la ruta
+//Ej:
+// {
+//     "nombre": "Feliz"
+// }
+//sin el app.use(express.json()); => hace req.body y la respuesta es undefined
+//Ahora con el app.use(express.json()); => hace req.body y la respuesta es:
+// {
+//     "nombre": "Feliz"
+// }
+//Middleware personalizado
+// const verificarToken = (req, res, next) => {
+
+//     console.log("Verificando token...");
+
+//     next();
+
+// };
+//Qué hace el next()?
+//significa ya termine, puedes seguir
+//Sin next() no llega a la ruta
+//Next es un guardia en la puerta, ademas se mueva la validacion al middleware
+//ejemplo :
+// const validarNombre = (req, res, next) => {
+//     if (!req.body.nombre) {
+//         return res.status(400).json({
+//             mensaje: "Falta el nombre"
+//         });
+//     }
+//     next();
+// };
+// app.post(
+//     "/emociones",
+//     validarNombre,
+//     (req, res) => {
+//         emociones.push(req.body);
+//         res.status(201).json({
+//             mensaje: "Creada"
+//         });
+
+//     }
+// );
+
+// Arquitectura básica de una API
+//Para que un archivo js sea muy grande conviene separarlas 
+// src/
+// ├── routes/
+// ├── controllers/
+// ├── services/
+// ├── app.js
+//Routes: Definen las rutas:
+// router.get("/emociones");
+// router.post("/emociones");
+//Piensa que la URL EXISTE?
+
+//Controllers: reciben la petición y responden:
+// const obtenerEmociones = (req, res) => {
+//     res.json(emociones);
+// };
+//Piensa: Que hago cuando alguien llama la ruta?
+
+//Services: Acá va la logica de negocio
+
+//LA BASE DE DATOS: lugar donde guardas la información para que sobreviva
+//flujo real: se crea emción => la API recibe => la BD la guarda 201 created
+
+//Base de datos conexión del backend con la bd
+// PASO 1: instalar PostgresSQL en node => npm install pg 
+// PASO 2: archivo database.js configuración básica:
+// const { Pool } = require("pg");
+// const pool = new Pool({
+//     user: "postgres",
+//     host: "localhost",
+//     database: "floflo",
+//     password: "123456",
+//     port: 5432
+// });
+// module.exports = pool;
+//PASO 3: crear endpoint express:
+// const express = require("express");
+// const db = require("./database");
+// const app = express();
+// app.get("/emociones/:id", async (req, res) => {
+//     const id = Number(req.params.id);
+//     const resultado = await db.query(
+//         "SELECT * FROM emociones WHERE id = $1",
+//         [id]
+//     );
+//     res.json(resultado.rows[0]);
+// });
+
+//viaje completo de una petición
+//En react se ejecuta: fetch("/emociones/3")
+//PASO 1 Llega a Express, la petición entra a GET /emociones/3
+//PASO 2: Route: router.get("/emociones/:id", obtenerEmocion), 
+// la ruta dice su alguien pide /emociones/:id ejecuta obtenerEmocion
+//PASO 3: Controller:
+// const obtenerEmocion = async (req, res) => {
+//     const id = Number(req.params.id);
+//     const emocion =
+//         await emocionService.buscarPorId(id);
+//     res.json(emocion);
+// };
+//aqui => req.params.id obtiene 3
+//PASO 4: Service: acá vivde la lógica
+// const buscarPorId = async (id) => {
+//     return db.query(
+//         "SELECT * FROM emociones WHERE id = $1",
+//         [id]
+//     );
+// };
+//PASO 5: La BD recibe:
+// SELECT * FROM emociones
+// WHERE id = 3;
+// Y responde id:3, nombre: "Enojado"
+
+//PASO 6 Vuelve a express genera:
+// {
+//     "id": 3,
+//     "nombre": "Enojado"
+// }
+
+//PASO7: React recibe: y lo muestra
+// {
+//     id: 3,
+//     nombre: "Enojado"
+// }
+
+
+
