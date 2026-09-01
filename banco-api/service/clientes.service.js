@@ -61,9 +61,58 @@ const eliminarCliente = async (id) => {
     return resultado.rows[0];
 }
 
+const obtenerCuentasdeCliente = async (id) => {
+    const resultado = await pool.query(
+       `SELECT *
+       FROM clientes
+       INNER JOIN cuentas
+       ON clientes.id = cuentas.cliente_id
+       WHERE clientes.id = $1; 
+       `, [id]
+    );
+    return resultado.rows;
+}
+
+const obtenerResumen = async (id) => {
+    const resultado = await pool.query(
+        `
+         SELECT clientes.nombre, 
+            COUNT (cuentas.numero_cuenta) AS cantidad_cuentas,
+            SUM (cuentas.saldo) AS saldo_total
+         FROM clientes
+         INNER JOIN cuentas
+         ON clientes.id = cuentas.cliente_id
+         where clientes.id = $1
+         group by clientes.nombre;   
+        `,
+        [id]
+    );
+    return resultado.rows[0];
+}
+
+const obtenerDashboardClientes = async () => {
+    const resultado = await pool.query(
+    `
+    SELECT clientes.nombre,
+       COUNT(cuentas.numero_cuenta) AS cantidad_cuentas,
+       COALESCE(SUM(cuentas.saldo), 0) AS saldo_total
+    FROM clientes
+    LEFT JOIN cuentas
+    ON clientes.id = cuentas.cliente_id
+    GROUP BY clientes.id, clientes.nombre
+    ORDER BY clientes.id
+    `
+    );
+    return resultado.rows;
+}
+
 module.exports = {
     obtenerTodos,
     obtenerPorId,
+    crearCliente,
     actualizarCliente,
-    eliminarCliente
+    eliminarCliente,
+    obtenerCuentasdeCliente,
+    obtenerResumen,
+    obtenerDashboardClientes
 }
