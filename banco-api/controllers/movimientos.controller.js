@@ -2,8 +2,8 @@ const movimientosService = require ("../service/movimientos.service");
 
 const obtenerMovimientos = async (req, res, next) => {
     try {
-        const clientes = await movimientosService.obtenerMovimientos();
-        return res.json(clientes);
+        const movimientos = await movimientosService.obtenerMovimientos();
+        return res.json(movimientos);
     } catch (error) {
         next(error);
     }

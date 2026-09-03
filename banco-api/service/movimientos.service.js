@@ -22,7 +22,7 @@ const crearMovimientos = async (cuenta_id, tipo, monto) => {
     throw new Error("Cuenta no encontrada");
   }
   // obtener saldo actual  de la cuenta
-  // Se convierte a Nunbre porque postgres puede devolverlo como string
+  // Se convierte a Nunber porque postgres puede devolverlo como string
   const saldoActual = Number(cuenta[0].saldo);
 
   // Guardará el saldo despues del movimiento
