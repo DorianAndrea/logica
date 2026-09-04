@@ -28,29 +28,64 @@ const obtenerTransferenciaPorId = async (req,res,next) => {
 const crearTransferencia = async (req, res, next) => {
     try {
         const {cuenta_origen_id, cuenta_destino_id, monto} = req.body;
-        if(!cuenta_origen_id || !cuenta_destino_id || !monto === undefined){
+        if(!cuenta_origen_id || !cuenta_destino_id || monto === undefined){
             return res.status(400).json({
-                message: "Cuenta de origen, cuenta destino y monto"
+                message: "Cuenta de origen, cuenta destino y monto son obligatorios"
             })
         }
         const transferencia = await transferenciasService.crearTransferencia(cuenta_origen_id, cuenta_destino_id, monto);
         return res.status(201).json(transferencia)
     } catch (error) {
-         if(error.message === "Cuenta de origen no encontrada"){
+        console.log("Mensaje recibido:", JSON.stringify(error.message));
+        //este rror se utuliza solamente para comprobar
+        //que postgres ejecuenta el ROLLBACK
+        if(error.message === "PRUEBA ROLLBACK"){
+            return res.status(400).json({
+                message: error.message
+            })
+        }
+        // La cuenta origen indicada no existe
+        if (error.message === "Cuenta de origen no encontrada") {
             return res.status(404).json({
                 message: error.message
             });
         }
-         // Si el service detectó que la cuenta destino no existe,
-    // devolvemos un mensaje amigable al usuario.
-            if(error.message === "Cuenta de destino no encontrada"){
+
+        // La cuenta destino indicada no existe
+        if (error.message === "Cuenta de destino no encontrada") {
             return res.status(404).json({
                 message: error.message
             });
         }
-        next(error)
+        if(error.message === "El monto debe ser mayor que cero"){
+             return res.status(400).json({
+             message: error.message
+            });
+        }
+
+
+        // No se puede transferir dinero hacia la misma cuenta
+        if (
+            error.message ===
+            "La cuenta de origen y destino no pueden ser iguales"
+        ) {
+            return res.status(400).json({
+                message: error.message
+            });
+        }
+        if(error.message === "El monto debe ser mayor a cero"){
+            return res.status(400).json({
+                message: error.message
+            });
+        }
+        if(error.message === "Saldo insuficiente"){
+            return res.status(400).json({
+                message: error.message
+            });
+        }
+        // Solo los errores no controlados llegan al middleware global
+        return next(error);
     }
-   
 }
 
 const actualizarTransferencia = async(req, res, next) => {
@@ -61,7 +96,7 @@ const actualizarTransferencia = async(req, res, next) => {
         const transferencia = await transferenciasService.actualizarTransferencia(id, cuenta_origen_id, cuenta_destino_id, monto);
         if(!cuenta_origen_id || !cuenta_destino_id || !monto){
             return res.status(400).json({
-                message: "Cuenta origen, cuenta de destino y monto son obligatorios"
+                message: "La cuenta origen, cuenta de destino y monto son obligatorios"
             })
         }
         return res.json(transferencia)
