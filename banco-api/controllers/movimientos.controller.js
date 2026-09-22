@@ -81,10 +81,29 @@ const eliminarMovimientos = async (req, res, next) => {
         next(error)   
     }
 }
+
+const obtenerMovimientosPorCuenta = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const movimientos = await movimientosService.obtenerMovimientosPorCuenta(id);
+        return res.status(200).json(
+            movimientos
+        );
+    } catch (error) {
+        if(error.message === "La cuenta no tiene historial de movimientos"){
+            return res.status(400).json({
+                message:error.message
+            })
+        }
+        next(error);
+    }
+}
+
 module.exports = {
     obtenerMovimientos,
     obtenerMovimientosPorId,
     crearMovimientos,
     actualizarMovimiento, 
-    eliminarMovimientos
+    eliminarMovimientos,
+    obtenerMovimientosPorCuenta
 }

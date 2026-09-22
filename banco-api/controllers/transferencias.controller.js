@@ -119,10 +119,64 @@ const eliminarTransferencias = async (req, res, next) => {
     }
 }
 
+const obtenerTransferenciasEnviadas = async (req,res,next) => {
+    try {
+        const { id } = req.params;
+        const transferencias = await transferenciasService.obtenerTransferenciasEnviadas(id);
+        return res.status(200).json(
+            transferencias
+        );
+    } catch (error) {
+        if(error.message === "La cuenta no tiene transferencias"){
+            return res.status(404).json({
+                message: error.message
+            });
+        }
+        next(error);
+    }
+}
+
+const obtenerTransferenciasRecibidas = async (req,res,next) => {
+    try {
+        const {id} = req.params;
+        const transferencias = await transferenciasService.obtenerTransferenciasRecibidas(id);
+        return res.status(200).json(
+            transferencias
+        );
+    } catch (error) {
+        if(error.message === "La cuenta de destino no tiene transferencias"){
+            return res.status(404).json({
+                message: error.message
+            });
+        }
+        next(error);
+    }
+}
+
+const obtenerHistorialDeTransferencias = async(req, res, next) => {
+    try {
+        const {id} = req.params;
+        const transferencias = await transferenciasService.obtenerHistorialDeTransferencias(id);
+        return res.status(200).json(
+            transferencias
+        );
+    } catch (error) {
+        if(error.message === "El historial no tiene transferencias"){
+            return res.status(400).json({
+                message:error.message
+            })
+        }
+        next(error);
+    }
+}
+
 module.exports = {
     obtenerTransferencias,
     obtenerTransferenciaPorId,
     crearTransferencia,
     actualizarTransferencia,
-    eliminarTransferencias
+    eliminarTransferencias,
+    obtenerTransferenciasEnviadas,
+    obtenerTransferenciasRecibidas,
+    obtenerHistorialDeTransferencias
 }

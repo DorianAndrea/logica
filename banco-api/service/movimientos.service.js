@@ -89,10 +89,25 @@ const eliminarMovimiento = async (id) => {
   return resultado.rows[0];
 };
 
+const obtenerMovimientosPorCuenta = async (cuenta_id) => {
+  const resultado = await pool.query(
+    `
+    SELECT * 
+    FROM movimientos
+    WHERE cuenta_id = $1;
+    `, [cuenta_id]
+  );
+  if(resultado.rows.length === 0 ){
+      throw new Error("La cuenta no tiene historial de movimientos")
+    }
+    return resultado.rows;
+}
+
 module.exports = {
   obtenerMovimientos,
   obtenerMovimientosPorId,
   crearMovimientos,
   actualizarMovimiento,
   eliminarMovimiento,
+  obtenerMovimientosPorCuenta
 };

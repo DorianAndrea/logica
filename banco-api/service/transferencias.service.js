@@ -195,10 +195,70 @@ const eliminarTransferencias = async (id) => {
   return resultado.rows[0];
 };
 
+const obtenerTransferenciasEnviadas = async (cuentaId) => {
+    const resultado = await pool.query(
+        `
+        SELECT * 
+        FROM transferencias
+        WHERE cuenta_origen_id = $1
+        `,
+        [cuentaId]
+    );
+
+    if(resultado.rows.length === 0 ){
+        throw new Error("La cuenta no tiene transferencias");
+    }
+    return resultado.rows;
+}
+
+const obtenerTransferenciasRecibidas = async (cuentaId) => {
+    const resultado = await pool.query(
+        `
+            SELECT * 
+            FROM transferencias
+            WHERE cuenta_destino_id = $1
+        `,
+        [cuentaId]
+    )
+    if(resultado.rows.length === 0){
+        throw new Error("La cuenta de destino no tiene transferencias")
+    }
+    return resultado.rows;
+}
+
+const obtenerHistorialDeTransferencias = async (cuentaId) =>{
+    const resultado = await pool.query(
+                `
+            SELECT
+                t.id,
+                t.monto,
+                t.fecha,
+                origen.numero_cuenta AS cuenta_origen,
+                destino.numero_cuenta AS cuenta_destino
+            FROM transferencias t
+            JOIN cuentas origen
+            ON t.cuenta_origen_id = origen.id
+            JOIN cuentas destino
+            ON t.cuenta_destino_id = destino.id
+            WHERE
+                t.cuenta_origen_id = $1
+            OR t.cuenta_destino_id = $1;
+        `,[cuentaId]
+    );
+    if(resultado.rows.length === 0){
+        throw new Error("La cuenta no tiene historial de transferencias")
+    }
+    return resultado.rows;
+}
+
 module.exports = {
   obtenerTransferencias,
   obtenerTransferenciaPorId,
+  obtenerTransferenciasEnviadas,
+  obtenerTransferenciasRecibidas,
+  obtenerHistorialDeTransferencias,
   crearTransferencia,
   actualizarTransferencia,
   eliminarTransferencias,
+
 };
