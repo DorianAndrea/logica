@@ -105,6 +105,32 @@ const obtenerCantidadMovimientosPorTipo = async () => {
     return resultado.rows;
 }
 
+const contarMovimientosPorTipo = async () => {
+    const resultado = await pool.query(
+        `
+        SELECT 
+            tipo
+            COUNT(*) AS cantidad
+        FROM movimientos
+        GROUP BY tipo;   
+        `
+    )
+    return resultado.rows;
+}
+
+const sumarMovimientosPorTipo = async () => {
+    const resultado = await pool.query(
+    `
+    SELECT
+        tipo,
+        SUM(monto) AS total
+    FROM movimientos
+    GROUP BY tipo;
+    `
+    )
+    return resultado.rows;
+}
+
 
 module.exports = {
     contarClientes,
@@ -113,5 +139,7 @@ module.exports = {
     sumarSaldoCuentas,
     sumarTransferencias,
     obtenerDashboard,
-    obtenerCantidadMovimientosPorTipo
+    obtenerCantidadMovimientosPorTipo,
+    contarMovimientosPorTipo,
+    sumarMovimientosPorTipo
 }

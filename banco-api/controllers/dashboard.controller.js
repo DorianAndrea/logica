@@ -62,6 +62,24 @@ const obtenerCantidadMovimientosPorTipo = async(req, res, next) => {
     }
 }
 
+const contarMovimientosPorTipo = async(req, res, next) => {
+    try {
+        const obteniendoCantidadMovimientosPorTipo = await dashboardService.obtenerCantidadMovimientosPorTipo();
+        return res.json(obteniendoCantidadMovimientosPorTipo);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const sumarMovimientosPorTipo = async (req, res, next) => {
+    try {
+        const sumandoMovinientosPorTipo = await dashboardService.sumarMovimientosPorTipo();
+        return res.json(sumandoMovinientosPorTipo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports= {
     contarClientes,
@@ -70,5 +88,7 @@ module.exports= {
     sumarSaldoCuentas,
     sumarTransferencias,
     obtenerDashboard,
-    obtenerCantidadMovimientosPorTipo
+    obtenerCantidadMovimientosPorTipo,
+    contarMovimientosPorTipo,
+    sumarMovimientosPorTipo
 }

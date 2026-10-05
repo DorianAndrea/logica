@@ -9,5 +9,7 @@ router.get("/dashboard/sumar/saldo/cuentas", dashboardController.sumarSaldoCuent
 router.get("/dashboard/sumar/transferencias", dashboardController.sumarTransferencias);
 router.get("/dashboard/obtener", dashboardController.obtenerDashboard);
 router.get("/obtenerMovimientosPorTipo", dashboardController.obtenerCantidadMovimientosPorTipo);
+router.get("/contarMovimientosPorTipo", dashboardController.obtenerCantidadMovimientosPorTipo);
+router.get("/sumarMovimientosPorTipo", dashboardController.sumarMovimientosPorTipo);
 
 module.exports = router;
